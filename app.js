@@ -21,7 +21,7 @@
       coprimeYes: 'The moduli are pairwise coprime, so the classic CRT applies.',
       coprimeNo: 'The moduli are not pairwise coprime; the generalized CRT (merging congruences) is used.',
       noSolution: 'No solution',
-      conflict: 'The system is inconsistent: after merging the first {k} congruences (x ≡ {x} mod {M}), congruence {n} requires {a} ≡ x (mod {m}), but {a} − {x} is not divisible by gcd({M}, {m}) = {g}.',
+      conflict: 'The system is inconsistent: the congruences before number {n} combine to x ≡ {x} (mod {M}), but congruence {n} requires x ≡ {a} (mod {m}), and {a} − {x} is not divisible by gcd({M}, {m}) = {g}.',
       allOk: 'All congruences are satisfied.',
       candOk: 'Your x = {x} is correct: it satisfies every congruence and x ≡ {x0} (mod {M}).',
       candBad: 'Your x = {x} is not a solution: it fails at least one congruence (see ✗ above).',
@@ -54,7 +54,7 @@
       coprimeYes: 'มอดุลัสเป็นจำนวนเฉพาะสัมพัทธ์กันทุกคู่ จึงใช้ CRT แบบมาตรฐานได้',
       coprimeNo: 'มอดุลัสไม่เป็นจำนวนเฉพาะสัมพัทธ์กันทุกคู่ จึงใช้ CRT แบบทั่วไป (รวมสมภาคทีละคู่)',
       noSolution: 'ไม่มีคำตอบ',
-      conflict: 'ระบบขัดแย้งกัน: หลังรวมสมภาคแรก {k} ข้อได้ x ≡ {x} (mod {M}) แต่สมภาคที่ {n} ต้องการ x ≡ {a} (mod {m}) และ {a} − {x} หารด้วย gcd({M}, {m}) = {g} ไม่ลงตัว',
+      conflict: 'ระบบขัดแย้งกัน: สมภาคก่อนหน้าสมภาคที่ {n} รวมกันได้ x ≡ {x} (mod {M}) แต่สมภาคที่ {n} ต้องการ x ≡ {a} (mod {m}) และ {a} − {x} หารด้วย gcd({M}, {m}) = {g} ไม่ลงตัว',
       allOk: 'ทุกสมภาคเป็นจริง',
       candOk: 'x = {x} ของคุณถูกต้อง: สอดคล้องกับทุกสมภาค และ x ≡ {x0} (mod {M})',
       candBad: 'x = {x} ของคุณไม่ใช่คำตอบ: ไม่สอดคล้องอย่างน้อยหนึ่งสมภาค (ดูเครื่องหมาย ✗ ด้านบน)',
@@ -156,6 +156,7 @@
     const p = (cls, html) => { const d = document.createElement('p'); if (cls) d.className = cls; d.innerHTML = html; return d; };
 
     s.appendChild(p('note', t(res.coprime ? 'coprimeYes' : 'coprimeNo')));
+    $('verifyHeading').hidden = $('stepsHeading').hidden = !res.ok;
 
     if (!res.ok) {
       const cf = res.conflict;
@@ -174,23 +175,16 @@
       s.appendChild(big);
       s.appendChild(p('note', `${t('general')}: x = ${res.x} + ${res.M}·k, k ∈ ℤ`));
 
-      CRT.verify(res.x, eqs).forEach((r, i) => {
+      const target = cand !== null ? cand : res.x;
+      const chk = CRT.verify(target, eqs);
+      chk.forEach((r) => {
         const li = document.createElement('li');
-        li.innerHTML = `<span class="${r.ok ? 'ok' : 'bad'}">${r.ok ? '✓' : '✗'}</span> ${res.x} mod ${r.m} = ${r.r} ${r.ok ? '=' : '≠'} ${CRT.mod(r.a, r.m)}`;
+        li.innerHTML = `<span class="${r.ok ? 'ok' : 'bad'}">${r.ok ? '✓' : '✗'}</span> ${target} mod ${r.m} = ${r.r} ${r.ok ? '=' : '≠'} ${CRT.mod(r.a, r.m)}`;
         v.appendChild(li);
       });
-      v.appendChild(p('ok', t('allOk')));
-
-      if (cand !== null) {
-        const chk = CRT.verify(cand, eqs);
+      if (cand === null) v.appendChild(p('ok', t('allOk')));
+      else {
         const good = chk.every((r) => r.ok);
-        c.appendChild(p('', ''));
-        chk.forEach((r) => {
-          const d = document.createElement('div');
-          d.style.fontFamily = 'ui-monospace, Menlo, monospace';
-          d.innerHTML = `<span class="${r.ok ? 'ok' : 'bad'}">${r.ok ? '✓' : '✗'}</span> ${cand} mod ${r.m} = ${r.r} ${r.ok ? '=' : '≠'} ${CRT.mod(r.a, r.m)}`;
-          c.appendChild(d);
-        });
         c.appendChild(p(good ? 'ok' : 'bad', t(good ? 'candOk' : 'candBad', { x: cand, x0: res.x, M: res.M })));
       }
 
