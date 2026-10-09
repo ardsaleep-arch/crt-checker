@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CRT Checker</title>
+  <meta name="description" content="Solve and verify systems of congruences with the Chinese Remainder Theorem, step by step.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1 data-i18n="title">Chinese Remainder Theorem Checker</h1>
+        <p class="sub" data-i18n="subtitle">Solve a system of congruences, see the working, and verify the answer.</p>
+      </div>
+      <button id="lang" type="button" aria-label="Language">ไทย</button>
+    </header>
+
+    <section class="card">
+      <h2 data-i18n="systemHeading">System of congruences</h2>
+      <div id="rows"></div>
+      <div class="actions">
+        <button id="add" type="button" data-i18n="addRow">+ Add congruence</button>
+        <button id="example" type="button" class="ghost" data-i18n="example">Load example</button>
+        <button id="solve" type="button" class="primary" data-i18n="solve">Solve &amp; verify</button>
+      </div>
+      <label class="candidate">
+        <span data-i18n="candidate">Check my answer (optional)</span>
+        <input id="candidate" inputmode="numeric" autocomplete="off" placeholder="x = ?">
+      </label>
+      <p id="error" class="error" role="alert" hidden></p>
+    </section>
+
+    <section id="result" class="card" hidden>
+      <h2 data-i18n="resultHeading">Result</h2>
+      <div id="summary"></div>
+      <h3 data-i18n="verifyHeading">Verification</h3>
+      <ul id="verify" class="verify"></ul>
+      <div id="candidateOut"></div>
+      <h3 data-i18n="stepsHeading">Step-by-step</h3>
+      <div id="steps" class="steps"></div>
+    </section>
+
+    <footer>
+      <span data-i18n="footer">Exact arithmetic with BigInt. Moduli need not be coprime.</span>
+    </footer>
+  </main>
+  <script src="crt.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
